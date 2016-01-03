@@ -133,7 +133,7 @@ class OpenLbr(eventBusClient.eventBusClient):
                 },
                 {
                     'sender'   : self.WILDCARD, #signal when a pkt from the mesh arrives and has to be forwarded to Internet (or local)
-                    'signal'   : 'fromMote.data', #only to data (any), not status nor error
+                    'signal'   : 'meshToV6', #only to data (any), not status nor error
                     'callback' : self._meshToV6_notif, 
                 },
             ]
@@ -154,7 +154,7 @@ class OpenLbr(eventBusClient.eventBusClient):
         This function assumes there is a component listening on the EventBus
         which answers to the 'getSourceRoute' signal.
         
-        This function dispatches the 6LoWPAN packet with signal 'bytesToMesh'.
+        This function dispatches the 6LoWPAN packet with signal 'fragment'.
         '''
         
         try:
@@ -205,8 +205,8 @@ class OpenLbr(eventBusClient.eventBusClient):
             #print lowpan_bytes
             # dispatch
             self.dispatch(
-                signal       = 'bytesToMesh',
-                data         = (lowpan['nextHop'],lowpan_bytes),
+                signal       = 'fragment',
+                data         = (lowpan['nextHop'],lowpan_bytes,lowpan['payload']),
             )
             
         except (ValueError,NotImplementedError) as err:
@@ -564,7 +564,7 @@ class OpenLbr(eventBusClient.eventBusClient):
         returnVal           += lowpan['cid']
 
         # payload
-        returnVal           += lowpan['payload']
+        #returnVal           += lowpan['payload']
         
         return returnVal
     

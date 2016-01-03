@@ -20,6 +20,7 @@ from openvisualizer.moteConnector import moteConnector
 from openvisualizer.moteState     import moteState
 from openvisualizer.RPL           import RPL
 from openvisualizer.openLbr       import openLbr
+from openvisualizer.openLbr       import fragment
 from openvisualizer.openTun       import openTun
 from openvisualizer.RPL           import UDPLatency
 from openvisualizer.RPL           import topology
@@ -48,6 +49,7 @@ class OpenVisualizerApp(object):
         
         # local variables
         self.eventBusMonitor      = eventBusMonitor.eventBusMonitor()
+	self.fragment             = fragment.Fragment()
         self.openLbr              = openLbr.OpenLbr()
         self.rpl                  = RPL.RPL()
         self.topology             = topology.topology()
