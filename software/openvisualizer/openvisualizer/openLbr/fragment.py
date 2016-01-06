@@ -62,7 +62,12 @@ class Fragment(eventBusClient.eventBusClient):
                 },
                 {
                     'sender'   : self.WILDCARD,
-                    'signal'   : 'fragabort', #signal an error for a fragmented message
+                    'signal'   : 'fromMote.fragsent', #signal fragment can be send to the mesh
+                    'callback' : self._fragsent_notif_mote,
+                },
+                {
+                    'sender'   : self.WILDCARD,
+                    'signal'   : 'fromMote.fragabort', #signal an error for a fragmented message
                     'callback' : self._fragabort_notif, 
                 },
                 {
@@ -154,9 +159,10 @@ class Fragment(eventBusClient.eventBusClient):
             return
   
         # Packet is fragmented
-        # Create a tag mapping from size+tag+source.
-	stag  = str(pkt[0] & 7) + str(pkt[1])
-	stag += str(pkt[2]) + str(pkt[3]) + str(data[0])
+        # Create a tag mapping from tag+size+source.
+	stag  = str((pkt[2] << 8) + pkt[3])
+	stag += str(pkt[0] & 7) + str(pkt[1])
+	stag += str(data[0])
 
 	size   = ((pkt[0] & 7) << 8) + pkt[1] 
 	tag    = (pkt[2] << 8) + pkt[3]
@@ -164,18 +170,20 @@ class Fragment(eventBusClient.eventBusClient):
 
         # First time this tag arrives
 	if not stag in self.rcvfragments:
-            self.rcvfragments[stag] = {'input':[], 'length':[], 'size': size}
+#            self.rcvfragments[stag] = {'input':[], 'length':[], 'size': size}
+            self.rcvfragments[stag] = {'input':{}, 'length':[], 'size': size}
 
         # Start of payload in frame
         spkt = self.FRAG_SKIP_BYTES
 	if fragmented == self.LOWPAN_FRAGN:
             spkt += 1 
         # Start (position) and length in msg
-	smsg = offset << 3   
+#	smsg = offset << 3   
 	length = len(pkt) - spkt
 
         # Store information
-	self.rcvfragments[stag]['input'][smsg:smsg+length] = pkt[spkt:spkt+length]
+#	self.rcvfragments[stag]['input'][smsg:smsg+length] = pkt[spkt:]
+	self.rcvfragments[stag]['input'][offset] = pkt[spkt:]
 	self.rcvfragments[stag]['length'].append(length)
 
 	# Check for completion
@@ -183,7 +191,10 @@ class Fragment(eventBusClient.eventBusClient):
 	for i in self.rcvfragments[stag]['length']:
             total += i
         if total == self.rcvfragments[stag]['size']:
-            msg = self.rcvfragments[stag]['input'][0:]
+#            msg = self.rcvfragments[stag]['input']
+            msg = []
+	    for i in sorted(self.rcvfragments[stag]['input']):
+	        msg += self.rcvfragments[stag]['input'][i]
 	    del self.rcvfragments[stag]
 	    self.dispatch(
                 signal = 'meshToV6',
@@ -223,26 +234,39 @@ class Fragment(eventBusClient.eventBusClient):
                 )
 
 		fragment['sent'] = True
-		#return
+		return
         
 	#Message sent
 	del self.sndfragments[stag]
 	#return
     
+    def _fragsent_notif_mote(self,sender,signal,data):
+	stag = data[1]
+	if stag in self.sndfragments:
+            self.dispatch(
+                signal = 'fragsent',
+                data   = stag,
+            )
+	else:
+ 	    if log.isEnabledFor(logging.DEBUG):
+	        log.debug("received sending tag {0} from mote".stag)
+  	#return
+
     def _fragabort_notif(self,sender,signal,data):
         '''
-	To DO
+        '''
 
 	incoming = data[0]
 	stag     = data[1]
 
 	if incoming:
-	    del self.rcvfragments[stag]
+	    if stag in self.rcvfragments:
+                del self.rcvfragments[stag]
 	else:
-	    del self.sndfragments[stag]
-        '''
+	    if stag in self.sndfragments:
+                del self.sndfragments[stag]
         
-        return 
+        #return 
     
     #======================== helpers =========================================
     

@@ -1,6 +1,6 @@
 # DO NOT EDIT DIRECTLY!
 # This file was generated automatically by GenStackDefines.py
-# on Sun, 03 Jan 2016 14:13:51
+# on Tue, 05 Jan 2016 16:27:49
 #
 
 components = {
@@ -48,11 +48,11 @@ components = {
 }
 
 errorDescriptions = {
-   1: "received an echo request",
+   1: "received an echo request, length {0}",
    2: "received an echo reply",
    3: "getData asks for too few bytes, maxNumBytes={0}, fill level={1}",
    4: "the input buffer has overflown",
-   5: "the command is not allowerd, command = {0}",
+   5: "the command is not allowed, command = {0}",
    6: "unknown transport protocol {0} (code location {1})",
    7: "wrong TCP state {0} (code location {1})",
    8: "TCP reset while in state {0} (code location {1})",
