@@ -108,9 +108,10 @@ class Fragment(eventBusClient.eventBusClient):
                 )
                 return
 
-            output  = "Sending fragments: "
-	    output += "iphc = " + str(len(iphc))
-	    output += " - payload = " + str(len(payload))
+	    if log.isEnabledFor(logging.DEBUG):
+                output  = "Sending fragments: "
+	        output += "iphc = " + str(len(iphc))
+	        output += " - payload = " + str(len(payload))
             max_fragment    -= self.FRAG_SKIP_BYTES
             actual_frag_size = max_fragment & 0xF8
 	    if actual_frag_size < len(iphc):
@@ -134,12 +135,12 @@ class Fragment(eventBusClient.eventBusClient):
 		self.sndfragments[stag]['frag'].append({'data': input[actual_sent:actual_sent+actual_frag_size], 'offset': actual_sent, 'sent': False})
                 actual_sent += actual_frag_size
 
-            output += " - offsets ="
-            for i in self.sndfragments[stag]['frag']:
-                output += " " + str(i['offset'])
 	    if log.isEnabledFor(logging.DEBUG):
+                output += " - offsets ="
+                for i in self.sndfragments[stag]['frag']:
+                    output += " " + str(i['offset'])
                 log.debug(output)
-            print output
+
             self.dispatch(
                 signal = 'fragsent',
                 data   = stag,
@@ -235,6 +236,10 @@ class Fragment(eventBusClient.eventBusClient):
                     payload.append(offset >> 3)
                 #data
                 payload += fragment['data']
+
+	        if log.isEnabledFor(logging.DEBUG):
+		    log.debug("Sending fragment of " + str(len(payload)) +"B")
+
 		#send it
 		self.dispatch(
                     signal = 'bytesToMesh',

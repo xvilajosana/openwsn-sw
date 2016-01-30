@@ -32,7 +32,6 @@ VIRTUALTUNID = [0x00,0x00,0x86,0xdd]
 
 IFF_TUN            = 0x0001
 TUNSETIFF          = 0x400454ca
-SIOCSIFMTU = 0x8922
 
 #============================ helper classes ==================================
 
@@ -137,7 +136,7 @@ class OpenTunLinux(openTun.OpenTun):
         # abort if not tun interface
         if not self.tunIf:
             return
-
+        
         # add tun header
         data  = VIRTUALTUNID + data
         
@@ -146,9 +145,9 @@ class OpenTunLinux(openTun.OpenTun):
         
         try:
             # write over tuntap interface
-            wrote = os.write(self.tunIf, data)
+            os.write(self.tunIf, data)
             if log.isEnabledFor(logging.DEBUG):
-                log.debug("data {2} dispatched to tun correctly {0}, {1}".format(signal,sender,wrote))
+                log.debug("data dispatched to tun correctly {0}, {1}".format(signal,sender))
         except Exception as err:
             errMsg=u.formatCriticalMessage(err)
             print errMsg
