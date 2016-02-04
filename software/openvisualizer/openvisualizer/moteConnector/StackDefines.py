@@ -1,6 +1,6 @@
 # DO NOT EDIT DIRECTLY!
 # This file was generated automatically by GenStackDefines.py
-# on Sat, 30 Jan 2016 01:01:07
+# on Sun, 31 Jan 2016 10:20:42
 #
 
 components = {
@@ -107,9 +107,12 @@ errorDescriptions = {
   57: "wrong CRC in input Buffer (input length {0})",
   58: "synchronized when received a packet",
   59: "security error on frameType {0}, code location {1}",
-  60: "trying to get an used fragment",
-  61: "trying to free an unused big packet",
-  44: "no free fragment buffer",
-  45: "incoming fragment overlaps with previously received one",
-  46: "fragment timer expired",
+  60: "sixtop return code {0} at sixtop state {1}",
+  61: "there are {0} cells to request mote",
+  62: "the cells reserved to request mote contains slot {0} and slot {1}",
+  63: "trying to get an used fragment",
+  64: "trying to free an unused big packet",
+  65: "no free fragment buffer",
+  66: "incoming fragment overlaps with previously received one",
+  67: "fragment timer expired",
 }

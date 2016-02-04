@@ -25,11 +25,12 @@ class Fragment(eventBusClient.eventBusClient):
       Transmission of IPv6 Packets over IEEE 802.15.4 Networks (fragmentation)
     '''
 
-    LOWPAN_DISPATCH = 5
-    LOWPAN_FRAG1    = 6
-    LOWPAN_FRAGN    = 7
+    FRAGMENT_DISPATCH = 3
+    FRAGMENT_FRAG1    = 0x18
+    FRAGMENT_FRAGN    = 0x1C
 
-    FRAG_SKIP_BYTES = 4 # Bytes to skip on frame when FRAG1
+    FRAGMENT_SKIP_BYTES = 4   # Bytes to skip on frame when FRAG1
+    FRAGMENT_DATA_UTIL  = 125 # Frame payload
 
     L2_HSIZE = 8+8+2+1+2 # myIP(8B) + next(8B) + MyID(2B) + DSN + FCF
     
@@ -94,11 +95,10 @@ class Fragment(eventBusClient.eventBusClient):
         '''
         
         try:
-            
             nextHop      = data[0]
             iphc         = data[1]
             payload      = data[2]
-            max_fragment = 125 - self.L2_HSIZE
+            max_fragment = self.FRAGMENT_DATA_UTIL - self.L2_HSIZE
             size         = len(iphc) + len(payload)
             if size <= max_fragment:
                 # dispatch
@@ -112,7 +112,7 @@ class Fragment(eventBusClient.eventBusClient):
                 output  = "Sending fragments: "
 	        output += "iphc = " + str(len(iphc))
 	        output += " - payload = " + str(len(payload))
-            max_fragment    -= self.FRAG_SKIP_BYTES
+            max_fragment    -= self.FRAGMENT_SKIP_BYTES
             actual_frag_size = max_fragment & 0xF8
 	    if actual_frag_size < len(iphc):
                 raise ValueError('unsupported IPHC size')
@@ -159,11 +159,12 @@ class Fragment(eventBusClient.eventBusClient):
         This function dispatches the 6LowPAN packet with signal 'fromMote.data'.
         '''
         pkt        = data[1]
-        fragmented = pkt[0] >> self.LOWPAN_DISPATCH
-        if fragmented != self.LOWPAN_FRAG1 and fragmented != self.LOWPAN_FRAGN:
+        fragmented = pkt[0] >> self.FRAGMENT_DISPATCH
+        if fragmented != self.FRAGMENT_FRAG1 and \
+           fragmented != self.FRAGMENT_FRAGN:
             self.dispatch(
                signal = 'meshToV6',
-	       data   = data,
+               data   = data,
             )
             return
   
@@ -175,7 +176,7 @@ class Fragment(eventBusClient.eventBusClient):
 
 	size   = ((pkt[0] & 7) << 8) + pkt[1] 
 	tag    = (pkt[2] << 8) + pkt[3]
-        offset = 0 if fragmented == self.LOWPAN_FRAG1 else pkt[4]
+        offset = 0 if fragmented == self.FRAGMENT_FRAG1 else pkt[4]
 
         # First time this tag arrives
 	if not stag in self.rcvfragments:
@@ -183,8 +184,8 @@ class Fragment(eventBusClient.eventBusClient):
             self.rcvfragments[stag] = {'input':{}, 'length':[], 'size': size}
 
         # Start of payload in frame
-        spkt = self.FRAG_SKIP_BYTES
-	if fragmented == self.LOWPAN_FRAGN:
+        spkt = self.FRAGMENT_SKIP_BYTES
+	if fragmented == self.FRAGMENT_FRAGN:
             spkt += 1 
         # Start (position) and length in msg
 #	smsg = offset << 3   
@@ -230,9 +231,9 @@ class Fragment(eventBusClient.eventBusClient):
 		payload.append(tag & 0x00FF)
 		#offset & dispatch
 		if offset == 0:
-                    payload[0] |= self.LOWPAN_FRAG1 << self.LOWPAN_DISPATCH
+                    payload[0] |= self.FRAGMENT_FRAG1 << self.FRAGMENT_DISPATCH
                 else:
-                    payload[0] |= self.LOWPAN_FRAGN << self.LOWPAN_DISPATCH
+                    payload[0] |= self.FRAGMENT_FRAGN << self.FRAGMENT_DISPATCH
                     payload.append(offset >> 3)
                 #data
                 payload += fragment['data']
