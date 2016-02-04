@@ -12,3 +12,5 @@ test_report_*.xml
 
 *.vcd
 /software/openApps/ietf90client/*.config
+
+*~

@@ -1,6 +1,6 @@
 # DO NOT EDIT DIRECTLY!
 # This file was generated automatically by GenStackDefines.py
-# on Sun, 31 Jan 2016 10:20:42
+# on Thu, 04 Feb 2016 20:28:43
 #
 
 components = {
@@ -44,7 +44,6 @@ components = {
   37: "UINJECT",
   38: "RRT",
   39: "SECURITY",
-  40: "FRAGTEST",
 }
 
 errorDescriptions = {
@@ -52,7 +51,7 @@ errorDescriptions = {
    2: "received an echo reply",
    3: "getData asks for too few bytes, maxNumBytes={0}, fill level={1}",
    4: "the input buffer has overflown",
-   5: "the command is not allowed, command = {0}",
+   5: "the command is not allowerd, command = {0}",
    6: "unknown transport protocol {0} (code location {1})",
    7: "wrong TCP state {0} (code location {1})",
    8: "TCP reset while in state {0} (code location {1})",
@@ -93,7 +92,7 @@ errorDescriptions = {
   43: "sendDone for packet I didn't send",
   44: "no free packet buffer (code location {0})",
   45: "freeing unused memory",
-  46: "freeing memory unsupported memory {0}",
+  46: "freeing memory unsupported memory",
   47: "unsupported command {0}",
   48: "unknown message type {0}",
   49: "wrong address type {0} (code location {1})",
