@@ -33,6 +33,8 @@ class Fragment(eventBusClient.eventBusClient):
     FRAGMENT_DATA_UTIL  = 125 # Frame payload
 
     L2_HSIZE = 8+8+2+1+2 # myIP(8B) + next(8B) + MyID(2B) + DSN + FCF
+
+    LENGTH_IPV6_MTU = 1280
     
     def __init__(self):
         
@@ -124,6 +126,8 @@ class Fragment(eventBusClient.eventBusClient):
             self.sndfragments[stag] = {'frag':[], 'size': size, 'tag': tag, 'nextHop': nextHop}
 
 	    input = iphc+payload
+	    if len(input) > self.LENGTH_IPV6_MTU:
+	        raise ValueError('unsupported packet size')
 
 	    self.sndfragments[stag]['frag'].append({'data': input[0:actual_frag_size], 'offset': 0, 'sent': False})
             actual_sent   = actual_frag_size
@@ -141,6 +145,7 @@ class Fragment(eventBusClient.eventBusClient):
                     output += " " + str(i['offset'])
                 log.debug(output)
 
+            print "Sending message of " + str(len(iphc)) + "/" + str(len(input)) + " in " + str(len(self.sndfragments[stag]['frag'])) + " fragments"
             self.dispatch(
                 signal = 'fragsent',
                 data   = stag,
@@ -273,12 +278,16 @@ class Fragment(eventBusClient.eventBusClient):
 	incoming = data[0]
 	stag     = data[1]
 
-	if incoming:
+	if incoming == 7:
 	    if stag in self.rcvfragments:
                 del self.rcvfragments[stag]
-	else:
+	elif incoming == 1:
 	    if stag in self.sndfragments:
                 del self.sndfragments[stag]
+	else: #if incoming == 2
+	    for msg in self.sndfragments:
+	        if str(msg['nextHop']) == tag:
+		    del msg
         
         #return 
     

@@ -23,6 +23,7 @@ class ParserBridge(Parser.Parser):
     SENDDONE = ord('S')
     FROMMESH = ord('F')
     TOMESH   = ord('T')
+    NEIGHBOR = ord('N')
      
     def __init__(self):
         
@@ -52,12 +53,22 @@ class ParserBridge(Parser.Parser):
        
 	eventType = 'fragabort' if input[0] == self.FAIL else 'fragsent'
 
-        tag = str((input[2] << 8) + input[3])
-	incoming = False
-	if input[1] == self.FROMMESH:
-            tag += str(input[4] & 7) + str(input[5]) # size
-	    tag += str(input[6:])                    # source
-	    incoming = True
+	if input[1] == self.TOMESH:
+            incoming = 1
+	elif input[1] == self.NEIGHBOR:
+            incoming = 2
+        else:
+	    incoming = 7
+	tag = ''
+	input = input[2:]
+	if incoming & 1:
+            tag += str((input[0] << 8) + input[1])   #tag
+	    input = input[2:]
+	if incoming & 4:
+            tag += str(input[0] & 7) + str(input[1]) # size
+	    input = input[2:]
+	if incoming & 2:
+	    tag += str(input[0:])                    # source or destination
         return (eventType,(incoming,tag))
 
  #======================== private =========================================
