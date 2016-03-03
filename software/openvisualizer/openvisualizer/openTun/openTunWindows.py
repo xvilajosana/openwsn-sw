@@ -24,6 +24,7 @@ import openvisualizer.openvisualizer_utils as u
 from   openvisualizer.eventBus import eventBusClient
 import openTun
 
+
 #============================ defines =========================================
 
 ## IPv4 configuration of your TUN interface (represented as a list of integers)
@@ -47,6 +48,7 @@ TAP_IOCTL_SET_MEDIA_STATUS        = TAP_CONTROL_CODE( 6, 0)
 TAP_IOCTL_CONFIG_TUN              = TAP_CONTROL_CODE(10, 0)
 
 #============================ helper classes ==================================
+MIN_DEVICEIO_BUFFER_SIZE          = 1
 
 class TunReadThread(threading.Thread):
     '''
