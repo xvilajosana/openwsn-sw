@@ -47,7 +47,7 @@ TAP_IOCTL_SET_MEDIA_STATUS        = TAP_CONTROL_CODE( 6, 0)
 TAP_IOCTL_CONFIG_TUN              = TAP_CONTROL_CODE(10, 0)
 
 #============================ helper classes ==================================
-
+MIN_DEVICEIO_BUFFER_SIZE          = 1
 class TunReadThread(threading.Thread):
     '''
     Thread which continously reads input from a TUN interface.
@@ -145,7 +145,7 @@ class OpenTunWindows(openTun.OpenTun):
     #======================== public ==========================================
     
     #======================== private =========================================
-    
+    MIN_DEVICEIO_BUFFER_SIZE          = 1
     def _v6ToInternet_notif(self,sender,signal,data):
         '''
         Called when receiving data from the EventBus.
@@ -194,7 +194,7 @@ class OpenTunWindows(openTun.OpenTun):
             tunIf,
             TAP_IOCTL_SET_MEDIA_STATUS,
             '\x01\x00\x00\x00',
-            None
+            MIN_DEVICEIO_BUFFER_SIZE
         )
         
         # prepare the parameter passed to the TAP_IOCTL_CONFIG_TUN commmand.
@@ -213,7 +213,7 @@ class OpenTunWindows(openTun.OpenTun):
             tunIf,
             TAP_IOCTL_CONFIG_TUN,
             configTunParam,
-            None
+            MIN_DEVICEIO_BUFFER_SIZE
         )
         
         # return the handler of the TUN interface
