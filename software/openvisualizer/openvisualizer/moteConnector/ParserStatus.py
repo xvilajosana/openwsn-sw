@@ -155,11 +155,11 @@ class ParserStatus(Parser.Parser):
                                         'backoff',                   # B
                                     ],
                                 )
-        self._addFieldsParser   (
+       self._addFieldsParser   (
                                     3,
                                     8,
                                     'QueueRow',
-                                    '<BBBBBBBBBBBBBBBBBBBB',
+                                    '<BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                                     [
                                         'creator_0',                 # B
                                         'owner_0',                   # B
@@ -181,6 +181,38 @@ class ParserStatus(Parser.Parser):
                                         'owner_8',                   # B
                                         'creator_9',                 # B
                                         'owner_9',                   # B
+                                        'creator_10',                 # B
+                                        'owner_10',                   # B
+                                        'creator_11',                 # B
+                                        'owner_11',                   # B
+                                        'creator_12',                 # B
+                                        'owner_12',                   # B
+                                        'creator_13',                 # B
+                                        'owner_13',                   # B
+                                        'creator_14',                 # B
+                                        'owner_14',                   # B
+                                        'creator_15',                 # B
+                                        'owner_15',                   # B
+                                        'creator_16',                 # B
+                                        'owner_16',                   # B
+                                        'creator_17',                 # B
+                                        'owner_17',                   # B
+                                        'creator_18',                 # B
+                                        'owner_18',                   # B
+                                        'creator_19',                 # B
+                                        'owner_19',                   # B
+                                        'creator_20',                 # B
+                                        'owner_20',                   # B
+                                        'creator_21',                 # B
+                                        'owner_21',                   # B
+                                        'creator_22',                 # B
+                                        'owner_22',                   # B
+                                        'creator_23',                 # B
+                                        'owner_23',                   # B
+                                        'creator_24',                 # B
+                                        'owner_24',                   # B
+                                        'creator_25',                 # B
+                                        'owner_25',                   # B                                        
                                     ],
                                 )
         self._addFieldsParser   (
