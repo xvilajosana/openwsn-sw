@@ -17,7 +17,7 @@ class BspUart(BspModule.BspModule):
     
     INTR_TX   = 'uart.tx'
     INTR_RX   = 'uart.rx'
-    BAUDRATE  = 115200
+    BAUDRATE  = 500000
     
     def __init__(self,motehandler):
         
